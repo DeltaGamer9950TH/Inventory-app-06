@@ -14,4 +14,13 @@ model product {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  sku         String?  // รหัสบาร์โค้ด
+  category    String?  // หมวดหมู่
+  brand       String?  // ยี่ห้อ
+  stock       Int      @default(0) // จำนวนสต็อก (ตั้งค่าเริ่มต้นเป็น 0)
+  weight      Float?   // น้ำหนัก
+  color       String?  // สี
+  material    String?  // วัสดุ
+  supplier    String?  // ซัพพลายเออร์ที่ส่งของ
+  status      String   @default("Active") // สถานะสินค้า (ตั้งเริ่มต้นเป็น Active)
 }

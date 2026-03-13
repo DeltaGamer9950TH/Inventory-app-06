@@ -1,27 +1,39 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 
-// PUT: แก้ไขข้อมูลสินค้า
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+
+export async function PUT(
+  request: Request, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const resolvedParams = await params;
     const body = await request.json();
-    const { name, price, description } = body;
+    
+    // ดึงข้อมูลทั้งหมดที่ส่งมา
+    const { name, price, description, brand, color, category, stock } = body;
 
     const updatedProduct = await prisma.product.update({
-      where: { id: Number(params.id) },
+      where: { id: Number(resolvedParams.id) },
       data: {
-        name,
-        price: Number(price),
-        description,
+        // อัปเดตเฉพาะค่าที่มีการส่งมา
+        name: name !== undefined ? name : undefined,
+        price: price !== undefined ? Number(price) : undefined,
+        description: description !== undefined ? description : undefined,
+        brand: brand !== undefined ? brand : undefined,
+        color: color !== undefined ? color : undefined,
+        category: category !== undefined ? category : undefined,
+        stock: stock !== undefined ? Number(stock) : undefined,
       },
     });
+    
     return NextResponse.json(updatedProduct);
   } catch (error) {
+    console.log("🔥 เจอ Error แก้ไขข้อมูล:", error);
     return NextResponse.json({ error: 'แก้ไขข้อมูลไม่สำเร็จ' }, { status: 500 });
   }
 }
 
-// DELETE: ลบข้อมูลสินค้า
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> } 

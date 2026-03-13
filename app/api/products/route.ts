@@ -13,25 +13,30 @@ export async function GET() {
   }
 }
 
-// POST: เพิ่มข้อมูลสินค้าใหม่
+// POST: เพิ่มข้อมูลสินค้า
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body: any = await request.json();
     
-    const name = String(body.name);
-    const price = Number(body.price);
-    const description = body.description ? String(body.description) : null;
-
+    // บันทึกลงฐานข้อมูล
     const newProduct = await prisma.product.create({
       data: {
-        name: name,
-        price: price,
-        description: description,
-      } as any, 
+        name: body.name,
+        price: Number(body.price),
+        description: body.description,
+        sku: body.sku || "NO-SKU", 
+        
+        brand: body.brand || null,
+        color: body.color || null,
+        
+        // 🟢 หลังบ้านรับค่า Category และ Stock จากหน้าเว็บ (ถ้าไม่ส่งมาก็ตั้งค่า Default ให้)
+        category: body.category || "General",
+        stock: Number(body.stock) || 0,
+      },
     });
-    return NextResponse.json(newProduct, { status: 201 });
+
+    return NextResponse.json(newProduct);
   } catch (error) {
-    console.log("🔥 เจอ Error จ้า:", error); 
-    return NextResponse.json({ error: 'เพิ่มข้อมูลไม่สำเร็จ' }, { status: 500 });
+    return NextResponse.json({ error: "เพิ่มข้อมูลไม่สำเร็จ" }, { status: 500 });
   }
 }
